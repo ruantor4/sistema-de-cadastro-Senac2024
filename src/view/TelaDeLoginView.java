@@ -1,92 +1,106 @@
 package view;
 
-import controller.*;
+import controller.*; // Importando as classes do pacote controller
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.awt.*; // Importando classes para o gerenciamento de componentes gráficos
+import java.awt.event.*; // Importando classes para manipulação de eventos
+import javax.swing.*; // Importando classes para a criação da interface gráfica
 
-
-
-public class TelaDeLoginView extends JFrame{
-
-    public static JLabel labelLogin;
-    public static JTextField textLogin;
-    public static JLabel labelSenha;
-    public static JPasswordField textSenha;
-    public static JButton btnLogin;
+// Definindo a classe TelaDeLoginView que estende JFrame para criar uma tela de login
+public class TelaDeLoginView extends JFrame {
+    // Declaração dos componentes da interface gráfica
+    public static JLabel lblLogin;
+    public static JTextField txtLogin;
+    public static JLabel lblSenha;
+    public static JPasswordField txtSenha;
+    public static JButton btnLogar;
     public static JLabel lblNotificacoes;
 
-    public TelaDeLoginView(){
-        
+    // Declaração para o layout da interface e suas restrições
+    public static GridBagLayout gbLayout;
+    public static GridBagConstraints gbConstraints;
 
-        super("Tela de Login");
-        setLayout(new FlowLayout());
+    // Construtor da classe que configura a tela
+    public TelaDeLoginView() {
+        super("Tela de Login"); // Definindo o título da janela
 
-        labelLogin = new JLabel("LOGIN: ");
-        add(labelLogin);
+        // Inicializando o layout
+        gbLayout = new GridBagLayout();
+        setLayout(gbLayout); // Definindo o layout para o JFrame
 
-        textLogin = new JTextField(10);     // ATRIBUINDO VALOR A VARIAVEL "10" CARACTERES                   
-        add(textLogin);                     // ADICIONANDO VALOR A VARIAVEL.
+        // Inicializando as restrições do GridBagLayout
+        gbConstraints = new GridBagConstraints();
 
-        labelSenha = new JLabel("SENHA: ");
-        add(labelSenha);
+        // Inicializando e configurando o JLabel e JTextField para o login
+        lblLogin = new JLabel("Login:");
+        InterfaceView.addComponent(lblLogin, 0, 0, 1, 1, gbLayout, gbConstraints, this); // Adicionando o componente à
+                                                                                         // tela
 
-        textSenha = new JPasswordField(10);
-        add(textSenha);
+        txtLogin = new JTextField(10);
+        InterfaceView.addComponent(txtLogin, 0, 1, 1, 1, gbLayout, gbConstraints, this); // Adicionando o campo de texto
+                                                                                         // à tela
 
-        btnLogin = new JButton("LOGAR");
-        add(btnLogin);
+        // Inicializando e configurando o JLabel e JPasswordField para a senha
+        lblSenha = new JLabel("Senha:");
+        InterfaceView.addComponent(lblSenha, 1, 0, 1, 1, gbLayout, gbConstraints, this); // Adicionando o componente à
+                                                                                         // tela
 
-        lblNotificacoes = new JLabel("Notificações");
-        add(lblNotificacoes);
+        txtSenha = new JPasswordField(10);
+        InterfaceView.addComponent(txtSenha, 1, 1, 1, 1, gbLayout, gbConstraints, this); // Adicionando o campo de senha
+                                                                                         // à tela
 
+        // Inicializando o botão de login
+        btnLogar = new JButton("Logar");
+        InterfaceView.addComponent(btnLogar, 2, 0, 2, 1, gbLayout, gbConstraints, this); // Adicionando o botão à tela
+
+        // Inicializando o JLabel para notificações
+        lblNotificacoes = new JLabel("Notificações", SwingConstants.CENTER);
+        // lblNotificacoes.setSize(getContentPane().getWidth(), 40); // Comentado,
+        // talvez para ajuste de tamanho
+        InterfaceView.addComponent(lblNotificacoes, 3, 0, 2, 1, gbLayout, gbConstraints, this); // Adicionando o
+                                                                                                // componente à tela
+
+        // Criando e adicionando um handler para o botão de login
         ButtonHandler buttonHandler = new ButtonHandler();
-        btnLogin.addActionListener(buttonHandler);
+        btnLogar.addActionListener(buttonHandler); // Associando o evento de clique do botão
 
-        textSenha.addKeyListener(
-            new KeyAdapter() {
-                @Override
-                public void keyReleased(KeyEvent e) {
-                    if (String.valueOf(textSenha.getPassword()).trim().length() > 0) {
-                        if (e.getKeyCode() == 10) {
-                            System.out.println("Você teclou Enter");
-                            TelaDeLoginController.logarController();
+        // Adicionando um listener para detectar o pressionamento da tecla Enter na
+        // senha
+        txtSenha.addKeyListener(
+                new KeyAdapter() {
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        // Verificando se há texto na senha e se a tecla Enter foi pressionada
+                        if (String.valueOf(txtSenha.getPassword()).trim().length() > 0) {
+                            if (e.getKeyCode() == 10) { // Código da tecla Enter
+                                TelaDeLoginController.logarController(); // Chamando o controlador para realizar o login
+                            }
                         }
                     }
-                }
-            }
-        );
+                });
+
+        // Definindo o ícone da interface
+        InterfaceView.definirIcone(this);
+        setSize(170, 140); // Definindo o tamanho da janela
+        setVisible(true); // Tornando a janela visível
     }
 
-    public class ButtonHandler implements ActionListener{
-        
+    // Classe interna para tratar o evento de clique no botão de login
+    private class ButtonHandler implements ActionListener {
         @Override
-        public void actionPerformed(ActionEvent event){
-        TelaDeLoginController.logarController();
-
+        public void actionPerformed(ActionEvent event) {
+            TelaDeLoginController.logarController(); // Chamando o controlador para realizar o login
         }
     }
 
-    public static String setHtmlFormat(String txt){
-        return "<html><body>" + txt + "</body></html>";
-    }
-
-    public static void notificarUsuario(String strtexto){
-        lblNotificacoes.setText(setHtmlFormat(strtexto));
-    }
-
+    // Instanciando a tela de login
     public static TelaDeLoginView appTelaDeLoginView;
-    public static void main(String[] args){                         // METODO PRINCIPAL PARA INICIAR O PROGRAMA
-        appTelaDeLoginView = new TelaDeLoginView();
 
-        appTelaDeLoginView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        appTelaDeLoginView.setSize(150, 200);
-        appTelaDeLoginView.setVisible(true);
+    // Método principal para rodar a aplicação
+    public static void main(String[] args) {
+        appTelaDeLoginView = new TelaDeLoginView(); // Criando a instância da tela de login
+        appTelaDeLoginView.setDefaultCloseOperation(EXIT_ON_CLOSE); // Definindo o comportamento de fechamento da janela
+        // InterfaceView.verificarLarguraEAltura(appTelaDeAtualizacaoView,
+        // lblNotificacoes); // Comentado, talvez para ajustes na interface
     }
-    
 }
-
